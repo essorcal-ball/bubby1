@@ -1,0 +1,47 @@
+```html
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+<div id="game"></div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const index = params.get('id');
+
+
+async function load() {
+const res = await fetch('/games');
+const list = await res.json();
+const g = list[index];
+
+
+document.getElementById('game').innerHTML = `
+<div class='card center'>
+<img src='${g.image}' class='big-img'>
+<h1>${g.title}</h1>
+<a href='${g.link}'><button>Play</button></a>
+
+
+<h3>Rate this game</h3>
+<div>
+${[1,2,3,4,5].map(n => `<button onclick='rate(${n})'>${n}</button>`).join('')}
+</div>
+</div>
+`;
+}
+
+
+async function rate(n) {
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user) return alert('Log in to rate.');
+
+
+alert('Rated ' + n + ' stars');
+}
+
+
+load();
+</script>
+</body>
+</html>
+```
