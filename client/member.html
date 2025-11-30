@@ -1,0 +1,44 @@
+```html
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="card center">
+<h1>Your Membership</h1>
+<div id="info"></div>
+
+
+<h2>Upgrade to PRO - $1</h2>
+<ul>
+<li>Secret chat with admin</li>
+<li>Vote 5 times on any game</li>
+<li>Pro badge on your profile</li>
+</ul>
+<button onclick="upgrade()">Upgrade to PRO</button>
+</div>
+
+
+<script>
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user) window.location = 'login.html';
+
+
+document.getElementById('info').innerHTML = `
+<p><strong>Name:</strong> ${user.name}</p>
+<p><strong>Email:</strong> ${user.email}</p>
+<p><strong>Bio:</strong> ${user.bio}</p>
+<p><strong>Pro:</strong> ${user.isPro ? 'Yes' : 'No'}</p>
+`;
+
+
+async function upgrade() {
+const res = await fetch('/payment/create-checkout', {
+method: 'POST'
+});
+const data = await res.json();
+window.location = `https://checkout.stripe.com/pay/${data.id}`;
+}
+</script>
+</body>
+</html>
+```
