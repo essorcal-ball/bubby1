@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<button onclick="toggleLogin()">Login</button>
+<button onclick="goToAdminLogin()">Admin</button>
+</header>
+
+
+<section id="loginSection" class="hidden">
+<h2>User Login</h2>
+<input id="usernameInput" placeholder="Username">
+<input id="passwordInput" type="password" placeholder="Password">
+<button onclick="login()">Submit</button>
+</section>
+
+
+<section>
+<h2>All Approved Games</h2>
+<div id="gamesList"></div>
+</section>
+
+
+<section>
+<h2>Submit Your Game</h2>
+<input id="gameName" placeholder="Game Name">
+<textarea id="gameDesc" placeholder="Description"></textarea>
+<input id="gameURL" placeholder="Game URL (embed or link)">
+<button onclick="submitGame()">Submit</button>
+</section>
+
+
+<script src="script.js"></script>
+</body>
+</html>
