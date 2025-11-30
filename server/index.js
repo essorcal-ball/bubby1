@@ -1,37 +1,25 @@
-const express = require("express");
-const routes = require("./routes");
-const adminRoutes = require("./routes-admin");
-const app = express();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+import { initDB } from "./db.js";
+import createUserRoutes from "./routes.js";
+import createAdminRoutes from "./routes-admin.js";
 
+dotenv.config();
+
+const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/", express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
+app.use(express.static("../client"));
 
-// Public routes
-app.use("/", routes);
+const db = await initDB();
 
-// Admin routes
-app.use("/", adminRoutes);
+app.use("/api", createUserRoutes(db));
+app.use("/api/admin", createAdminRoutes(db));
 
-// Stripe checkout for PRO
-app.post("/create-checkout-session", async(req,res)=>{
-    const session = await stripe.checkout.sessions.create({
-        mode:"payment",
-        line_items:[{
-            price_data:{
-                currency:"usd",
-                product_data:{ name:"Pro Upgrade" },
-                unit_amount:100
-            },
-            quantity:1
-        }],
-        success_url: "https://your-frontend-url/success",
-        cancel_url: "https://your-frontend-url/cancel"
-    });
-    res.json({ url: session.url });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running on port " + PORT));
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () =>
+  console.log("Server running on port", PORT)
+);
