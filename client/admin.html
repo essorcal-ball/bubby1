@@ -2,36 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Bob the Stickman Games</title>
+    <title>Bob The Stickman Games</title>
     <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
 </head>
 <body>
 
-    <header>
-        <h1>Admin Dashboard</h1>
-    </header>
+<header>
+    <h1>Bob The Stickman Games</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="member.html" id="memberLink">Create / Log In</a>
+        <a href="upload.html" id="uploadLink">Upload Game</a>
+        <a href="admin.html">Admin</a>
+    </nav>
+</header>
 
-    <main style="padding:20px">
+<section class="game-list">
+    <h2>Approved Games</h2>
+    <div id="gamesContainer" class="game-grid"></div>
+</section>
 
-        <!-- ADMIN LOGIN -->
-        <section id="adminLoginSection">
-            <h2>Admin Login</h2>
-            <input id="adminPassword" type="password" placeholder="Enter admin password">
-            <button onclick="adminLogin()">Login</button>
-            <p id="adminLoginStatus"></p>
-        </section>
-
-        <!-- DASHBOARD -->
-        <section id="dashboard" style="display:none;">
-            <h2>Game Approval Requests</h2>
-            <div id="pendingGames"></div>
-
-            <h2>All Users</h2>
-            <div id="userList"></div>
-        </section>
-
-    </main>
-
-    <script src="admin.js"></script>
 </body>
 </html>
