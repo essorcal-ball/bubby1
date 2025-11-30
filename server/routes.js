@@ -1,54 +1,73 @@
-const express = require("express");
-const multer = require("multer");
-const db = require("./db");
-const router = express.Router();
+import express from "express";
+import bcrypt from "bcrypt";
+import multer from "multer";
+import path from "path";
 
-const upload = multer({ dest: "uploads/" });
+export default function createUserRoutes(db) {
+  const router = express.Router();
+  const upload = multer({ dest: "uploads/" });
 
-// REGISTER
-router.post("/register",(req,res)=>{
-    db.run(
-        `INSERT INTO users(username,email,password) VALUES(?,?,?)`,
-        [req.body.username, req.body.email, req.body.password],
-        err => err ? res.send("Error") : res.send("Account created")
+  router.post("/signup", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+      const hash = await bcrypt.hash(password, 10);
+
+      await db.run(
+        "INSERT INTO users (username, password) VALUES (?, ?)",
+        [username, hash]
+      );
+
+      res.json({ success: true });
+    } catch {
+      res.json({ success: false, error: "Username already exists" });
+    }
+  });
+
+  router.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    const user = await db.get(
+      "SELECT * FROM users WHERE username = ?",
+      [username]
     );
-});
 
-// LOGIN
-router.post("/login",(req,res)=>{
-    db.get(
-        `SELECT * FROM users WHERE username=? AND password=?`,
-        [req.body.username, req.body.password],
-        (err,row)=>{
-            if(row){
-                res.send("Logged in as "+row.username);
-            } else {
-                res.send("Invalid login");
-            }
-        }
-    );
-});
+    if (!user) return res.json({ success: false });
 
-// GET APPROVED GAMES
-router.get("/games",(req,res)=>{
-    db.all(`SELECT * FROM games WHERE approved=1`,[],(err,rows)=>{
-        res.json(rows);
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.json({ success: false });
+
+    res.json({
+      success: true,
+      id: user.id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+      isPro: user.isPro
     });
-});
+  });
 
-// SUBMIT GAME
-router.post("/submit-game",upload.fields([
-    { name:"thumbnail", maxCount:1 },
-    { name:"file", maxCount:1 }
-]),(req,res)=>{
-    let tn = req.files.thumbnail[0].path;
-    let fl = req.files.file[0].path;
+  router.post("/upload", upload.single("file"), async (req, res) => {
+    const { title, description, uploaderId } = req.body;
 
-    db.run(
-        `INSERT INTO games(name,description,thumbnail,file) VALUES(?,?,?,?)`,
-        [req.body.name, req.body.description, tn, fl],
-        err => err ? res.send("Error") : res.send("Sent to admin for approval")
+    await db.run(
+      `INSERT INTO games (title, description, filePath, uploaderId) VALUES (?, ?, ?, ?)`,
+      [title, description, req.file.filename, uploaderId]
     );
-});
 
-module.exports = router;
+    res.json({ success: true });
+  });
+
+  router.get("/games", async (req, res) => {
+    const games = await db.all("SELECT * FROM games WHERE approved = 1");
+    res.json(games);
+  });
+
+  router.get("/game/:id", async (req, res) => {
+    const game = await db.get("SELECT * FROM games WHERE id = ?", [
+      req.params.id
+    ]);
+    res.json(game);
+  });
+
+  return router;
+}
