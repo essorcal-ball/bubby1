@@ -1,5 +1,6 @@
 const express = require("express");
 const routes = require("./routes");
+const adminRoutes = require("./routes-admin");
 const app = express();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const cors = require("cors");
@@ -7,7 +8,12 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 app.use("/", express.static("uploads"));
+
+// Public routes
 app.use("/", routes);
+
+// Admin routes
+app.use("/", adminRoutes);
 
 // Stripe checkout for PRO
 app.post("/create-checkout-session", async(req,res)=>{
