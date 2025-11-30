@@ -1,73 +1,134 @@
-import express from "express";
-import bcrypt from "bcrypt";
-import multer from "multer";
-import path from "path";
+const express = require("express");
+const router = express.Router();
+const { loadDB, saveDB } = require("./db");
+const bcrypt = require("bcryptjs");
+const fileUpload = require("express-fileupload");
+const path = require("path");
+const { v4: uuid } = require("uuid");
 
-export default function createUserRoutes(db) {
-  const router = express.Router();
-  const upload = multer({ dest: "uploads/" });
+router.use(fileUpload());
 
-  router.post("/signup", async (req, res) => {
-    const { username, password } = req.body;
+// --- SESSION CHECK ---
+function getUser(req) {
+    const db = loadDB();
+    return db.users.find(u => u.id === req.cookies.session);
+}
 
-    try {
-      const hash = await bcrypt.hash(password, 10);
+// --- SIGNUP ---
+router.post("/signup", (req, res) => {
+    const db = loadDB();
+    const { name, email, username, about, password } = req.body;
 
-      await db.run(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
-        [username, hash]
-      );
+    if (db.users.find(u => u.email === email))
+        return res.json({ success: false, message: "Email already exists" });
 
-      res.json({ success: true });
-    } catch {
-      res.json({ success: false, error: "Username already exists" });
-    }
-  });
+    const id = uuid();
 
-  router.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+    db.users.push({
+        id,
+        name,
+        email,
+        username,
+        about,
+        password: bcrypt.hashSync(password),
+        pro: false,
+        plays: 0,
+        ratings: []
+    });
 
-    const user = await db.get(
-      "SELECT * FROM users WHERE username = ?",
-      [username]
-    );
+    saveDB(db);
+    res.json({ success: true });
+});
 
-    if (!user) return res.json({ success: false });
+// --- LOGIN ---
+router.post("/login", (req, res) => {
+    const db = loadDB();
+    const { email, password } = req.body;
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.json({ success: false });
+    const user = db.users.find(u => u.email === email);
+    if (!user) return res.json({ success: false, message: "User not found" });
+
+    if (!bcrypt.compareSync(password, user.password))
+        return res.json({ success: false, message: "Incorrect password" });
+
+    res.cookie("session", user.id, { httpOnly: true });
+    res.json({ success: true });
+});
+
+// --- USER INFO ---
+router.get("/me", (req, res) => {
+    const user = getUser(req);
+    if (!user) return res.json({ loggedIn: false });
 
     res.json({
-      success: true,
-      id: user.id,
-      username: user.username,
-      isAdmin: user.isAdmin,
-      isPro: user.isPro
+        loggedIn: true,
+        username: user.username,
+        email: user.email,
+        about: user.about,
+        pro: user.pro
     });
-  });
+});
 
-  router.post("/upload", upload.single("file"), async (req, res) => {
-    const { title, description, uploaderId } = req.body;
+// --- UPGRADE TO PRO ---
+router.post("/upgradePro", (req, res) => {
+    const db = loadDB();
+    const user = getUser(req);
+    if (!user) return res.json({ message: "Not logged in" });
 
-    await db.run(
-      `INSERT INTO games (title, description, filePath, uploaderId) VALUES (?, ?, ?, ?)`,
-      [title, description, req.file.filename, uploaderId]
-    );
+    user.pro = true;
+    saveDB(db);
 
-    res.json({ success: true });
-  });
+    res.json({ message: "You are now a PRO member!" });
+});
 
-  router.get("/games", async (req, res) => {
-    const games = await db.all("SELECT * FROM games WHERE approved = 1");
-    res.json(games);
-  });
+// --- PUBLIC GAME LIST ---
+router.get("/games", (req, res) => {
+    const db = loadDB();
+    res.json(db.games);
+});
 
-  router.get("/game/:id", async (req, res) => {
-    const game = await db.get("SELECT * FROM games WHERE id = ?", [
-      req.params.id
-    ]);
+// --- SINGLE GAME ---
+router.get("/game", (req, res) => {
+    const db = loadDB();
+    const game = db.games.find(g => g.id === req.query.id);
     res.json(game);
-  });
+});
 
-  return router;
-}
+// --- UPLOAD GAME ---
+router.post("/upload", (req, res) => {
+    const db = loadDB();
+    const user = getUser(req);
+    if (!user) return res.json({ message: "You must log in to upload games." });
+
+    const { title, gamelink, message } = req.body;
+
+    const id = uuid();
+
+    let imagePath = "";
+    if (req.files && req.files.image) {
+        const img = req.files.image;
+        imagePath = "/uploads/" + id + "_" + img.name;
+        img.mv(path.join(__dirname, "../client/uploads", id + "_" + img.name));
+    }
+
+    let filePath = gamelink;
+    if (req.files && req.files.gamefile) {
+        const f = req.files.gamefile;
+        filePath = "/uploads/" + id + "_" + f.name;
+        f.mv(path.join(__dirname, "../client/uploads", id + "_" + f.name));
+    }
+
+    db.pending.push({
+        id,
+        title,
+        image: imagePath,
+        link: filePath,
+        message,
+        user: user.id
+    });
+
+    saveDB(db);
+    res.json({ message: "Game submitted for admin approval!" });
+});
+
+module.exports = router;
