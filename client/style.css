@@ -1,49 +1,39 @@
+```css
 body {
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#272727;
-    color:white;
+margin: 0;
+background: #1b1b1b;
+color: white;
+font-family: Arial;
 }
-
-header {
-    background:#3d4f3a;
-    padding:20px;
-    text-align:center;
+.card {
+background: #2d2d2d;
+padding: 20px;
+border-radius: 10px;
+margin: 20px;
+box-shadow: 0 0 10px black;
 }
-
-nav button {
-    background:#ff8c00;
-    border:none;
-    padding:10px 20px;
-    margin:5px;
-    cursor:pointer;
-    font-size:16px;
-    border-radius:8px;
+.center {
+max-width: 400px;
+margin: auto;
+margin-top: 40px;
 }
-
-.screen {
-    display:none;
-    padding:20px;
+button {
+background: orange;
+padding: 10px 20px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-size: 16px;
 }
-
-.screen.active {
-    display:block;
+input, textarea {
+width: 90%;
+padding: 10px;
+margin: 6px 0;
+border-radius: 6px;
+border: none;
 }
-
-#gameList {
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-    gap:20px;
+.big-img {
+width: 100%;
+border-radius: 10px;
 }
-
-.gameCard {
-    background:#444;
-    padding:15px;
-    border-radius:10px;
-}
-
-.gameCard img {
-    width:100%;
-    height:140px;
-    object-fit:cover;
-}
+```
