@@ -1,0 +1,44 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="card center">
+<h1>Submit Your Game</h1>
+<input id="title" placeholder="Game Title"><br>
+<input id="image" placeholder="Image URL"><br>
+<input id="link" placeholder="Game File URL or Link"><br>
+<textarea id="message" placeholder="Message to Admin..."></textarea><br>
+<button onclick="submitGame()">Submit</button>
+</div>
+<script>
+async function submitGame() {
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user) return alert('You must log in first.');
+
+
+const payload = {
+username: user.username,
+title: document.getElementById('title').value,
+image: document.getElementById('image').value,
+link: document.getElementById('link').value,
+message: document.getElementById('message').value
+};
+
+
+await fetch('/submit-game', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(payload)
+});
+
+
+alert('Game submitted for approval');
+window.location = 'index.html';
+}
+</script>
+</body>
+</html>
+```
