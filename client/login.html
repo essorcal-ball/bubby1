@@ -1,32 +1,28 @@
-```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Log In</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
 </head>
 <body>
-<div class="card center">
-<h1>Log In</h1>
-<input id="username" placeholder="Username">
-<button onclick="login()">Log In</button>
-<p>Don't have an account? <a href="signup.html">Create one</a></p>
+
+<div class="form-container">
+    <h2>Log In</h2>
+
+    <form id="loginForm">
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Log In</button>
+    </form>
+
+    <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
 </div>
-<script>
-async function login() {
-const username = document.getElementById('username').value;
-const res = await fetch('/login', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ username })
-});
-const data = await res.json();
-if (data.user) {
-localStorage.setItem('user', JSON.stringify(data.user));
-window.location = 'index.html';
-}
-else alert('User not found');
-}
-</script>
+
 </body>
 </html>
-```
