@@ -1,78 +1,90 @@
-const API = "https://your-render-backend-url.onrender.com"; // Change after deploy
-
-function showScreen(id){
-    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
-
-// LOAD APPROVED GAMES
-async function loadGames(){
-    let res = await fetch(API+"/games");
-    let games = await res.json();
-
-    let html="";
-    games.forEach(g=>{
-        html+=`
-        <div class="gameCard">
-            <img src="${API}/${g.thumbnail}">
-            <h3>${g.name}</h3>
-            <p>${g.description}</p>
-            <a href="${API}/${g.file}" target="_blank">
-                <button>Play</button>
-            </a>
-        </div>`;
+async function api(url, data) {
+    const res = await fetch(url, {
+        method: "POST",
+        body: data instanceof FormData ? data : JSON.stringify(data),
+        headers: data instanceof FormData ? {} : { "Content-Type": "application/json" }
     });
-    document.getElementById("gameList").innerHTML = html;
+    return await res.json();
 }
-loadGames();
 
-async function register(){
-    let data = {
-        username: username.value,
-        email: email.value,
-        password: password.value
+// Load games on index.html
+if (document.getElementById("gamesContainer")) {
+    fetch("/api/games").then(r => r.json()).then(games => {
+        const cont = document.getElementById("gamesContainer");
+        games.forEach(g => {
+            cont.innerHTML += `
+                <div class="game-card">
+                    <img src="${g.image}">
+                    <h3>${g.title}</h3>
+                    <button onclick="location.href='game.html?id=${g.id}'">Play</button>
+                </div>`;
+        });
+    });
+}
+
+// Upload game
+if (document.getElementById("uploadForm")) {
+    document.getElementById("uploadForm").onsubmit = async e => {
+        e.preventDefault();
+        let form = new FormData(e.target);
+        let res = await api("/api/upload", form);
+        alert(res.message);
     };
-    let res = await fetch(API+"/register",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify(data)
-    });
-    loginStatus.innerText = await res.text();
 }
 
-async function login(){
-    let data = {
-        username: username.value,
-        password: password.value
+// Login
+if (document.getElementById("loginForm")) {
+    document.getElementById("loginForm").onsubmit = async e => {
+        e.preventDefault();
+        let data = Object.fromEntries(new FormData(e.target));
+        let res = await api("/api/login", data);
+        if (res.success) location.href = "member.html";
+        else alert(res.message);
     };
-    let res = await fetch(API+"/login",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify(data)
-    });
-    loginStatus.innerText = await res.text();
 }
 
-async function submitGame(){
-    let fd = new FormData();
-    fd.append("name", gameName.value);
-    fd.append("description", gameDesc.value);
-    fd.append("thumbnail", gameThumbnail.files[0]);
-    fd.append("file", gameFile.files[0]);
-
-    let res = await fetch(API+"/submit-game",{
-        method:"POST",
-        body:fd
-    });
-
-    uploadStatus.innerText = await res.text();
+// Signup
+if (document.getElementById("signupForm")) {
+    document.getElementById("signupForm").onsubmit = async e => {
+        e.preventDefault();
+        let data = Object.fromEntries(new FormData(e.target));
+        let res = await api("/api/signup", data);
+        if (res.success) location.href = "login.html";
+        else alert(res.message);
+    };
 }
 
-async function upgradePro() {
-    let res = await fetch(API+"/create-checkout-session",{
-        method:"POST"
+// Member info + Pro upgrade
+if (document.getElementById("memberInfo")) {
+    fetch("/api/me").then(r => r.json()).then(me => {
+        if (!me.loggedIn) return location.href = "login.html";
+        document.getElementById("memberInfo").innerHTML = `
+            <h2>${me.username}</h2>
+            <p>${me.email}</p>
+            <p>${me.about}</p>
+            <p>Status: <b>${me.pro ? "PRO" : "Free"}</b></p>
+        `;
+        if (me.pro) document.getElementById("proBox").style.display = "none";
     });
+}
 
-    let session = await res.json();
-    window.location = session.url;
+// Upgrade to pro
+if (document.getElementById("upgradeBtn")) {
+    document.getElementById("upgradeBtn").onclick = async () => {
+        let res = await api("/api/upgradePro", {});
+        alert(res.message);
+        location.reload();
+    };
+}
+
+// Game page
+if (document.getElementById("playBtn")) {
+    const params = new URLSearchParams(location.search);
+    fetch("/api/game?id=" + params.get("id")).then(r => r.json()).then(g => {
+        document.getElementById("gameTitle").innerText = g.title;
+        document.getElementById("gameImage").src = g.image;
+        document.getElementById("playBtn").onclick = () => {
+            document.getElementById("gameFrame").src = g.link;
+        };
+    });
 }
