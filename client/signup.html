@@ -1,36 +1,36 @@
-```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
 </head>
 <body>
-<div class="card center">
-<h1>Create Account</h1>
-<input id="name" placeholder="Full Name"><br>
-<input id="email" placeholder="Email"><br>
-<input id="username" placeholder="Username"><br>
-<textarea id="bio" placeholder="About you..."></textarea><br>
-<button onclick="signup()">Create Account</button>
+
+<div class="form-container">
+    <h2>Create Account</h2>
+
+    <form id="signupForm">
+        <label>Name</label>
+        <input type="text" name="name" required>
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Username</label>
+        <input type="text" name="username" required>
+
+        <label>About You</label>
+        <textarea name="about"></textarea>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Sign Up</button>
+    </form>
+
 </div>
-<script>
-async function signup() {
-let data = {
-name: document.getElementById('name').value,
-email: document.getElementById('email').value,
-username: document.getElementById('username').value,
-bio: document.getElementById('bio').value
-};
-const res = await fetch('/signup', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(data)
-});
-const json = await res.json();
-if (json.success) window.location = 'login.html';
-else alert('Username already exists');
-}
-</script>
+
 </body>
 </html>
-```
