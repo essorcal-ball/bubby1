@@ -1,297 +1,78 @@
-<!-- client/index.html -->
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Bob the Stickman Games</title>
-  <style>
-    /* Basic styles - keep the modern look you liked */
-    :root{--accent:#ff7a18;--accent2:#556b2f}
-    body{font-family:Inter,Arial;margin:0;background:#f7f8fb;color:#111}
-    header{background:linear-gradient(90deg,var(--accent2),#8b5a2b);color:white;padding:16px}
-    .wrap{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-    nav button{background:var(--accent);border:none;color:white;padding:8px 12px;border-radius:8px;cursor:pointer;margin-left:8px}
-    main{max-width:1100px;margin:20px auto;padding:0 16px}
-    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
-    .card{background:white;padding:12px;border-radius:10px; box-shadow:0 6px 18px rgba(15,23,42,0.06)}
-    .thumb{height:140px;background:#ddd;border-radius:8px;overflow:hidden}
-    .thumb img{width:100%;height:100%;object-fit:cover}
-    .play-btn{background:var(--accent2);color:white;padding:8px 10px;border:none;border-radius:8px;cursor:pointer}
-    input,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef}
-    .small{font-size:13px;color:#6b7280}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}}
-  </style>
+    <meta charset="UTF-8">
+    <title>Bob the Stickman Games</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><div class="wrap"><h1>Bob the Stickman Games</h1>
-  <div>
-    <button onclick="show('home')">Home</button>
-    <button onclick="show('submit')">Submit</button>
-    <button onclick="show('account')">Account</button>
-    <button onclick="adminPrompt()">Admin</button>
-  </div>
-</div></header>
 
-<main>
-  <div class="grid">
-    <div>
-      <section id="home" class="card">
-        <h2>Approved Games</h2>
-        <div id="games"></div>
-      </section>
+    <header>
+        <h1>Bob the Stickman Games</h1>
+        <nav>
+            <button onclick="showScreen('home')">Home</button>
+            <button onclick="showScreen('upload')">Upload Game</button>
+            <button onclick="showScreen('login')">Create / Log In</button>
+            <button onclick="showScreen('member')">Member Page</button>
+        </nav>
+    </header>
 
-      <section id="submit" class="card" style="display:none;margin-top:16px">
-        <h2>Submit Game</h2>
-        <div class="small" id="submitNotice">Log in to submit</div>
-        <div style="margin-top:8px">
-          <label>Title</label><input id="s_title">
-          <label>Link</label><input id="s_link">
-          <label>Thumbnail</label><input id="s_thumb" type="file">
-          <label>Message</label><textarea id="s_msg"></textarea>
-          <div style="margin-top:8px">
-            <button onclick="submitGame()">Submit</button>
-          </div>
-        </div>
-      </section>
+    <main id="screens">
 
-      <section id="account" class="card" style="display:none;margin-top:16px">
-        <h2>Account</h2>
-        <div id="accountArea">
-          <label>Username</label><input id="u_username">
-          <label>Email</label><input id="u_email">
-          <label>Name</label><input id="u_name">
-          <label>About</label><textarea id="u_about"></textarea>
-          <div style="margin-top:8px"><button onclick="loginOrCreate()">Create / Login</button></div>
-        </div>
+        <!-- HOME SCREEN -->
+        <section id="home" class="screen active">
+            <h2>Approved Games</h2>
+            <div id="gameList"></div>
+        </section>
 
-        <div id="accountInfo" style="display:none;margin-top:12px">
-          <div><strong id="infoName"></strong> <span id="proBadge" style="color:gold"></span></div>
-          <div class="small" id="infoEmail"></div>
-          <div class="small" id="infoAbout"></div>
-          <div style="margin-top:8px">
-            <button onclick="goToPayment()">Upgrade to Pro ($1)</button>
-            <button onclick="logout()">Log out</button>
-          </div>
-        </div>
-      </section>
-    </div>
+        <!-- UPLOAD SCREEN -->
+        <section id="upload" class="screen">
+            <h2>Upload a Game</h2>
 
-    <aside>
-      <div class="card">
-        <h3>Profile</h3>
-        <div id="sidebar">Not logged in</div>
-      </div>
+            <div id="uploadForm">
+                <label>Game Name:</label>
+                <input type="text" id="gameName">
 
-      <div class="card" style="margin-top:12px">
-        <h3>Secret Chat (Pro)</h3>
-        <div id="chatArea" style="min-height:120px;max-height:220px;overflow:auto"></div>
-        <div style="margin-top:8px"><input id="chatMsg"><button onclick="sendChat()">Send</button></div>
-      </div>
-    </aside>
-  </div>
-</main>
+                <label>Upload Thumbnail:</label>
+                <input type="file" id="gameThumbnail">
 
-<script>
-const API = location.origin; // server is same origin when deployed
-let token = localStorage.getItem('btg_token') || null;
-let myUser = null;
+                <label>Upload Game File (zip or HTML file):</label>
+                <input type="file" id="gameFile">
 
-async function api(path, opts = {}) {
-  opts.headers = opts.headers || {};
-  if(token) opts.headers['Authorization'] = 'Bearer ' + token;
-  const res = await fetch(API + path, opts);
-  if(res.status === 401) {
-    token = null; localStorage.removeItem('btg_token');
-    myUser = null; renderAccount();
-  }
-  return res.json();
-}
+                <label>Description:</label>
+                <textarea id="gameDesc"></textarea>
 
-function show(id) {
-  ['home','submit','account'].forEach(s => document.getElementById(s).style.display='none');
-  document.getElementById(id).style.display = 'block';
-  if(id === 'home') loadApproved();
-  if(id === 'submit') checkSubmit();
-  if(id === 'account') renderAccount();
-}
-show('home');
+                <button onclick="submitGame()">Submit Game</button>
+            </div>
 
-async function loginOrCreate(){
-  const username = document.getElementById('u_username').value.trim();
-  const email = document.getElementById('u_email').value.trim();
-  const name = document.getElementById('u_name').value.trim();
-  const about = document.getElementById('u_about').value.trim();
-  if(!username) return alert('username required');
-  const body = { username, email, name, about };
-  const r = await api('/api/register-or-login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  if(r.error) return alert(r.error);
-  token = r.token; localStorage.setItem('btg_token', token);
-  myUser = r.user;
-  alert('Logged in as ' + r.user.username);
-  renderAccount();
-  show('home');
-}
+            <p id="uploadStatus"></p>
+        </section>
 
-async function renderAccount(){
-  document.getElementById('accountArea').style.display = 'block';
-  document.getElementById('accountInfo').style.display = 'none';
-  if(!token) { document.getElementById('sidebar').innerText = 'Not logged in'; return; }
-  const r = await api('/api/me');
-  if(r.error) return alert(r.error);
-  myUser = r.user;
-  document.getElementById('infoName').innerText = myUser.name + ' ('+myUser.username+')';
-  document.getElementById('infoEmail').innerText = myUser.email;
-  document.getElementById('infoAbout').innerText = myUser.about;
-  document.getElementById('proBadge').innerText = myUser.isPro ? 'PRO' : '';
-  document.getElementById('accountArea').style.display = 'none';
-  document.getElementById('accountInfo').style.display = 'block';
-  document.getElementById('sidebar').innerText = myUser.name + ' @' + myUser.username + (myUser.isPro? ' • PRO':'');
-}
+        <!-- LOGIN / REGISTER -->
+        <section id="login" class="screen">
+            <h2>Create Account / Log In</h2>
 
-async function logout(){
-  token = null; localStorage.removeItem('btg_token'); myUser = null; renderAccount();
-}
+            <input id="username" placeholder="Username">
+            <input id="email" placeholder="Email">
+            <input id="password" placeholder="Password" type="password">
 
-async function checkSubmit(){
-  if(!token) {
-    document.getElementById('submitNotice').innerText = 'Log in to submit';
-    return;
-  }
-  const r = await api('/api/me');
-  if(r.error) { document.getElementById('submitNotice').innerText = 'Log in to submit'; return; }
-  document.getElementById('submitNotice').innerText = 'Submitting as ' + r.user.username;
-}
+            <button onclick="register()">Create Account</button>
+            <button onclick="login()">Log In</button>
 
-async function submitGame(){
-  if(!token) return alert('Log in to submit');
-  const title = document.getElementById('s_title').value.trim();
-  const link = document.getElementById('s_link').value.trim();
-  const msg = document.getElementById('s_msg').value.trim();
-  const file = document.getElementById('s_thumb').files[0];
-  if(!title || !link) return alert('title & link required');
-  if(!file) return alert('thumbnail required');
-  const fd = new FormData();
-  fd.append('title', title);
-  fd.append('link', link);
-  fd.append('message', msg);
-  fd.append('thumbnail', file);
-  const res = await fetch(API + '/api/submit-game', { method:'POST', headers: { 'Authorization': 'Bearer ' + token }, body: fd });
-  const j = await res.json();
-  if(j.error) return alert(j.error);
-  alert('Submitted for approval');
-  document.getElementById('s_title').value=''; document.getElementById('s_link').value=''; document.getElementById('s_msg').value=''; document.getElementById('s_thumb').value='';
-  show('home');
-}
+            <p id="loginStatus"></p>
+        </section>
 
-async function loadApproved(){
-  const r = await api('/api/approved');
-  const games = r.games || [];
-  const container = document.getElementById('games');
-  container.innerHTML = '';
-  if(games.length === 0) container.innerHTML = '<div class="small">No approved games yet.</div>';
-  games.forEach(g => {
-    const el = document.createElement('div'); el.className='card'; el.style.marginBottom='10px';
-    const thumb = document.createElement('div'); thumb.className='thumb';
-    const img = document.createElement('img'); img.src = (g.thumbnail ? g.thumbnail : '');
-    thumb.appendChild(img);
-    el.appendChild(thumb);
-    const title = document.createElement('h3'); title.innerText = g.title; el.appendChild(title);
-    const meta = document.createElement('div'); meta.className='small'; meta.innerText = 'By ' + (g.submittedBy || 'unknown'); el.appendChild(meta);
-    const actions = document.createElement('div'); actions.style.marginTop='8px';
-    const play = document.createElement('button'); play.className='play-btn'; play.innerText='Play'; play.onclick = ()=> { window.open(g.link, '_blank'); if(token) fetch(API + '/api/play/' + g.id, { method:'POST', headers:{ 'Authorization':'Bearer ' + token } }); };
-    actions.appendChild(play);
-    const rating = document.createElement('span'); rating.className='small'; rating.style.marginLeft='8px'; rating.innerText = g.avgRating ? '★ ' + (g.avgRating.toFixed(1)) : 'No rating';
-    actions.appendChild(rating);
-    const vote = document.createElement('button'); vote.style.marginLeft='8px'; vote.innerText='Vote'; vote.onclick = ()=> voteDialog(g.id);
-    actions.appendChild(vote);
-    el.appendChild(actions);
-    container.appendChild(el);
-  });
-}
+        <!-- MEMBER PAGE -->
+        <section id="member" class="screen">
+            <h2>Member Info</h2>
+            <div id="memberInfo"></div>
 
-async function voteDialog(gameId){
-  if(!token) return alert('Log in to vote');
-  const val = parseInt(prompt('Enter rating 1-5'));
-  if(!val || val<1 || val>5) return alert('Invalid');
-  const res = await api('/api/vote/' + gameId, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ value: val }) });
-  const j = await res;
-  if(j.error) alert(j.error); else { alert('Thanks!'); loadApproved(); }
-}
+            <h3>Upgrade to PRO ($1)</h3>
+            <button onclick="upgradePro()">Upgrade to Pro</button>
+        </section>
 
-/* -----------------------
-   Admin (browser prompt uses header x-admin-pass)
-   ----------------------- */
-async function adminPrompt(){
-  const pass = prompt('Admin passcode:');
-  if(!pass) return;
-  // show pending (simple)
-  const r = await fetch(API + '/api/pending?admin_pass=' + encodeURIComponent(pass)).then(r=>r.json());
-  if(r.error) return alert(r.error || 'no access');
-  const pending = r.pending || [];
-  if(pending.length === 0) return alert('No pending games');
-  let list = pending.map((p,i)=> (i+1) + '. ' + p.title + ' (by: ' + p.submittedBy + ')').join('\\n');
-  const pick = parseInt(prompt('Pending:\\n' + list + '\\nEnter number to review')) - 1;
-  if(isNaN(pick) || pick < 0 || pick >= pending.length) return;
-  const action = prompt('Type "a" to approve, "r" to reject');
-  const id = pending[pick].id;
-  if(action === 'a') {
-    const res = await fetch(API + '/api/pending/' + id + '/approve', { method:'POST', headers:{ 'x-admin-pass': pass } }).then(r=>r.json());
-    if(res.error) alert(res.error); else { alert('Approved'); loadApproved(); }
-  } else if(action === 'r') {
-    const res = await fetch(API + '/api/pending/' + id + '/reject', { method:'POST', headers:{ 'x-admin-pass': pass } }).then(r=>r.json());
-    if(res.error) alert(res.error); else alert('Rejected');
-  }
-}
+    </main>
 
-/* -----------------------
-   Payment: call server to create session and redirect
-   ----------------------- */
-async function goToPayment(){
-  if(!token) return alert('Log in first');
-  const r = await api('/api/create-checkout-session', { method: 'POST' });
-  if(r.error) return alert(r.error);
-  if(r.url) {
-    window.location.href = r.url; // redirect to Stripe Checkout
-  } else {
-    alert('Could not create session');
-  }
-}
-
-/* -----------------------
-   Chat
-   ----------------------- */
-async function sendChat(){
-  if(!token) return alert('Log in and be Pro to chat');
-  const msg = document.getElementById('chatMsg').value.trim();
-  if(!msg) return;
-  const r = await api('/api/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ msg }) });
-  const j = await r;
-  if(j.error) return alert(j.error);
-  document.getElementById('chatMsg').value='';
-  loadChat();
-}
-async function loadChat(){
-  if(!token) return;
-  const r = await api('/api/chat');
-  if(r.error) { document.getElementById('chatArea').innerText = r.error; return; }
-  const area = document.getElementById('chatArea');
-  area.innerHTML = '';
-  (r.chat || []).forEach(c => {
-    const d = document.createElement('div'); d.className='small'; d.innerText = c.fromUser + ': ' + c.msg;
-    area.appendChild(d);
-  });
-}
-
-/* -----------------------
-   boot
-   ----------------------- */
-window.addEventListener('load', () => {
-  if(localStorage.getItem('btg_token')) token = localStorage.getItem('btg_token');
-  loadApproved();
-  renderAccount();
-  loadChat();
-});
-</script>
+    <script src="app.js"></script>
 </body>
 </html>
