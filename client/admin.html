@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - Bob the Stickman Games</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+
+    <main style="padding:20px">
+
+        <!-- ADMIN LOGIN -->
+        <section id="adminLoginSection">
+            <h2>Admin Login</h2>
+            <input id="adminPassword" type="password" placeholder="Enter admin password">
+            <button onclick="adminLogin()">Login</button>
+            <p id="adminLoginStatus"></p>
+        </section>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" style="display:none;">
+            <h2>Game Approval Requests</h2>
+            <div id="pendingGames"></div>
+
+            <h2>All Users</h2>
+            <div id="userList"></div>
+        </section>
+
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
