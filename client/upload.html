@@ -1,44 +1,35 @@
-```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Upload Game</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
 </head>
 <body>
-<div class="card center">
-<h1>Submit Your Game</h1>
-<input id="title" placeholder="Game Title"><br>
-<input id="image" placeholder="Image URL"><br>
-<input id="link" placeholder="Game File URL or Link"><br>
-<textarea id="message" placeholder="Message to Admin..."></textarea><br>
-<button onclick="submitGame()">Submit</button>
+
+<header>
+    <h1>Submit a Game</h1>
+</header>
+
+<div class="form-container">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label>Game Title</label>
+        <input type="text" name="title" required>
+
+        <label>Upload Game File OR Link</label>
+        <input type="file" name="gamefile">
+        <input type="text" name="gamelink" placeholder="https://...">
+
+        <label>Game Image</label>
+        <input type="file" name="image" required>
+
+        <label>Message to Admin</label>
+        <textarea name="message"></textarea>
+
+        <button type="submit">Submit for Approval</button>
+    </form>
 </div>
-<script>
-async function submitGame() {
-const user = JSON.parse(localStorage.getItem('user'));
-if (!user) return alert('You must log in first.');
 
-
-const payload = {
-username: user.username,
-title: document.getElementById('title').value,
-image: document.getElementById('image').value,
-link: document.getElementById('link').value,
-message: document.getElementById('message').value
-};
-
-
-await fetch('/submit-game', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(payload)
-});
-
-
-alert('Game submitted for approval');
-window.location = 'index.html';
-}
-</script>
 </body>
 </html>
-```
