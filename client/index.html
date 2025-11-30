@@ -2,77 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bob the Stickman Games</title>
+    <title>Bob The Stickman Games</title>
     <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
 </head>
 <body>
 
-    <header>
-        <h1>Bob the Stickman Games</h1>
-        <nav>
-            <button onclick="showScreen('home')">Home</button>
-            <button onclick="showScreen('upload')">Upload Game</button>
-            <button onclick="showScreen('login')">Create / Log In</button>
-            <button onclick="showScreen('member')">Member Page</button>
-        </nav>
-    </header>
+<header>
+    <h1>Bob The Stickman Games</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="member.html" id="memberLink">Create / Log In</a>
+        <a href="upload.html" id="uploadLink">Upload Game</a>
+        <a href="admin.html">Admin</a>
+    </nav>
+</header>
 
-    <main id="screens">
+<section class="game-list">
+    <h2>Approved Games</h2>
+    <div id="gamesContainer" class="game-grid"></div>
+</section>
 
-        <!-- HOME SCREEN -->
-        <section id="home" class="screen active">
-            <h2>Approved Games</h2>
-            <div id="gameList"></div>
-        </section>
-
-        <!-- UPLOAD SCREEN -->
-        <section id="upload" class="screen">
-            <h2>Upload a Game</h2>
-
-            <div id="uploadForm">
-                <label>Game Name:</label>
-                <input type="text" id="gameName">
-
-                <label>Upload Thumbnail:</label>
-                <input type="file" id="gameThumbnail">
-
-                <label>Upload Game File (zip or HTML file):</label>
-                <input type="file" id="gameFile">
-
-                <label>Description:</label>
-                <textarea id="gameDesc"></textarea>
-
-                <button onclick="submitGame()">Submit Game</button>
-            </div>
-
-            <p id="uploadStatus"></p>
-        </section>
-
-        <!-- LOGIN / REGISTER -->
-        <section id="login" class="screen">
-            <h2>Create Account / Log In</h2>
-
-            <input id="username" placeholder="Username">
-            <input id="email" placeholder="Email">
-            <input id="password" placeholder="Password" type="password">
-
-            <button onclick="register()">Create Account</button>
-            <button onclick="login()">Log In</button>
-
-            <p id="loginStatus"></p>
-        </section>
-
-        <!-- MEMBER PAGE -->
-        <section id="member" class="screen">
-            <h2>Member Info</h2>
-            <div id="memberInfo"></div>
-
-            <h3>Upgrade to PRO ($1)</h3>
-            <button onclick="upgradePro()">Upgrade to Pro</button>
-        </section>
-
-    </main>
-
-    <script src="app.js"></script>
 </body>
 </html>
