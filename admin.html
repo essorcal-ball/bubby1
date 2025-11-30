@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+<h1>Admin Dashboard</h1>
+<button onclick="viewUsers()">Users</button>
+<button onclick="goHome()">Home</button>
+</header>
+
+
+<section>
+<h2>Pending Games</h2>
+<div id="pendingGames"></div>
+</section>
+
+
+<section>
+<h2>Approved Games</h2>
+<div id="approvedGames"></div>
+</section>
+
+
+<section id="usersSection" class="hidden">
+<h2>All Users</h2>
+<div id="userList"></div>
+</section>
+
+
+<script src="admin.js"></script>
+</body>
+</html>
