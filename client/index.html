@@ -2,28 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bob The Stickman Games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Site</title>
     <link rel="stylesheet" href="style.css">
-    <script defer src="app.js"></script>
 </head>
 <body>
-<header>
-    <h1 id="siteTitle">
-        <span class="letter" data-letter="B">B</span>
-        <span class="letter" data-letter="T">T</span>
-        <span class="letter" data-letter="S">S</span>
-        <span class="letter" data-letter="G">G</span>ob The Stickman Games
-    </h1>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="member.html" id="memberLink">Create / Log In</a>
-        <a href="upload.html" id="uploadLink">Upload Game</a>
-    </nav>
-</header>
 
-<section class="game-list">
-    <h2>Approved Games</h2>
-    <div id="gamesContainer" class="game-grid"></div>
-</section>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div>Welcome to our website!</div>
+        <div class="top-contact">
+            <span>📞 (000) 000-0000</span>
+            <span>✉ example@example.com</span>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="nav-logo">YOUR LOGO</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Games</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+        <button class="nav-btn">LOGIN</button>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>We Are Awesome!</h1>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                Doloribus ex ipsa obcaecati maxime perspiciatis error ducimus.
+            </p>
+            <div class="hero-btns">
+                <button class="btn-primary">Explore More</button>
+                <button class="btn-secondary">Purchase Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section class="services">
+        <h2>OUR SERVICES</h2>
+        <p class="services-sub">
+            Gravity pasture limited evening oncket around the beauty  
+            before european union leaders agreed for clear.
+        </p>
+
+        <div class="service-grid">
+            <div class="service-card">
+                <h3>Posting Games</h3>
+                <p>Submit and share your creations with the community.</p>
+            </div>
+            <div class="service-card">
+                <h3>Approval System</h3>
+                <p>Your admin panel decides which games go live.</p>
+            </div>
+            <div class="service-card">
+                <h3>User Profiles</h3>
+                <p>Track your uploads, ratings, and progress.</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
 </body>
 </html>
