@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign up</title><link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-  <div class="container">
-    <div class="form-card">
-      <h2>Create Account</h2>
-      <form onsubmit="event.preventDefault(); doSignup(this);">
-        <input name="name" placeholder="Full name" required>
-        <input name="email" type="email" placeholder="Email" required>
-        <input name="username" placeholder="Username" required>
-        <textarea name="about" placeholder="About you (optional)"></textarea>
-        <input name="password" type="password" placeholder="Password" required>
-        <button type="submit" class="btn btn-primary">Create Account</button>
-      </form>
-    </div>
-  </div>
-  <script src="script.js"></script>
+
+<h1>Create Account</h1>
+
+<input id="email" type="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Password"><br>
+<button onclick="signup()">Sign Up</button>
+
+<p id="msg"></p>
+
+<script src="client.js"></script>
 </body>
 </html>
