@@ -1,1 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Dashboard</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="form-card">
+      <h2>Admin Dashboard</h2>
+      <section>
+        <h3>Pending Games</h3>
+        <div id="pendingList"></div>
+      </section>
+      <section style="margin-top:18px">
+        <h3>Members</h3>
+        <div id="membersList"></div>
+      </section>
+    </div>
+  </div>
+<script>
+async function loadAdmin(){
+  const pending = await fetch('/api/admin/pending').then(r=>r.json());
+  const p = document.getElementById('pendingList'); p.innerHTML='';
+  pending.forEach(g=>{
+    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='10px';
+    d.innerHTML = `<strong>${g.title}</strong><p class="small">${g.description || ''}</p>
+      <button class="btn btn-primary" onclick="approve('${g.id}')">Approve</button>
+      <button class="btn btn-outline" onclick="deny('${g.id}')">Deny</button>`;
+    p.appendChild(d);
+  });
 
+  const members = await fetch('/api/admin/members').then(r=>r.json());
+  const m = document.getElementById('membersList'); m.innerHTML='';
+  members.forEach(u=>{
+    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px';
+    d.innerHTML = `<strong>${u.username || u.name}</strong> <div class="small">Email: ${u.email}</div>
+      <div style="margin-top:8px">
+        <button class="btn btn-primary" onclick="togglePro('${u.id}')">Toggle PRO</button>
+        <button class="btn btn-outline" onclick="unlock('${u.id}')">Unlock</button>
+        <button class="btn" style="background:#f66;color:#fff" onclick="kick('${u.id}')">Kick</button>
+      </div>`;
+    m.appendChild(d);
+  });
+}
+
+async function approve(id){ await fetch('/api/admin/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); loadAdmin();}
+async function deny(id){ await fetch('/api/admin/deny',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); loadAdmin();}
+async function togglePro(id){ await fetch('/api/admin/togglePro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); loadAdmin();}
+async function unlock(id){ await fetch('/api/admin/unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); loadAdmin();}
+async function kick(id){ await fetch('/api/admin/kick',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); loadAdmin();}
+
+loadAdmin();
+</script>
+</body>
+</html>
