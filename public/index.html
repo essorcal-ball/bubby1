@@ -1,59 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bob the Stickman Games</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bob the Stickman Games</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="top-bar">
-    <div>Welcome to Bob the Stickman Games</div>
-    <div class="small">✉ support@example.com</div>
-  </div>
 
-  <header class="header">
-    <div class="brand">
-      <!-- clickable letters B T S G -->
-      <span class="secret-letter" data-letter="B">B</span>
-      <span class="secret-letter" data-letter="T">T</span>
-      <span class="secret-letter" data-letter="S">S</span>
-      <span class="secret-letter" data-letter="G">G</span>
-      ob the Stickman Games
-    </div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="upload.html">Submit</a>
-      <a href="account.html">Account</a>
-    </nav>
-    <div class="actions">
-      <button onclick="location.href='login.html'">Log in</button>
-    </div>
-  </header>
+<h1 id="main-title">
+    <span class="click-letter" data-letter="B">B</span>ob 
+    <span class="click-letter" data-letter="t">t</span>he 
+    <span class="click-letter" data-letter="S">S</span>tickman 
+    <span class="click-letter" data-letter="G">G</span>ames
+</h1>
 
-  <section class="hero">
-    <div class="left">
-      <h1>Find, Play & Share</h1>
-      <p>Submit your games for approval and share them with the community. Admin approves games to appear on the main site.</p>
-      <div class="cta">
-        <button class="btn btn-primary" onclick="location.href='upload.html'">Submit a Game</button>
-        <button class="btn btn-outline" onclick="location.href='account.html'">Your Account</button>
-      </div>
-    </div>
-    <div class="right">
-      <div class="form-card">
-        <h3>Top Games</h3>
-        <div id="gamesGrid"></div>
-      </div>
-    </div>
-  </section>
+<div id="admin-secret" style="display:none;">
+    <h2>Admin Login</h2>
+    <input type="password" id="admin-pass" placeholder="Enter admin password">
+    <button onclick="submitAdminPassword()">Submit</button>
+</div>
 
-  <div class="container">
-    <h2 style="margin-bottom:14px">Approved Games</h2>
-    <div id="gamesGrid" class="grid"></div>
-  </div>
+<h2>Games</h2>
+<div id="games"></div>
 
-  <footer class="footer">© Bob the Stickman Games</footer>
+<a href="signup.html">Create Account</a> |
+<a href="login.html">Login</a>
+
+<script src="secret.js"></script>
+<script src="client.js"></script>
 </body>
 </html>
