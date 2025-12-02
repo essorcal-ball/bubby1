@@ -1,1 +1,22 @@
-
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Upload Game</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="form-card">
+      <h2>Submit a Game</h2>
+      <form id="uploadForm" onsubmit="event.preventDefault(); submitUpload(this);">
+        <input name="title" placeholder="Game title" required>
+        <textarea name="description" placeholder="Description"></textarea>
+        <label class="small">Thumbnail image</label>
+        <input name="image" type="file" accept="image/*">
+        <label class="small">Game file (zip/html) or link</label>
+        <input name="gamefile" type="file">
+        <input name="link" placeholder="https:// (optional)">
+        <button type="submit" class="btn btn-primary">Submit for Approval</button>
+      </form>
+    </div>
+  </div>
+<script src="script.js"></script>
+</body>
+</html>
