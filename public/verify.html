@@ -1,1 +1,29 @@
-
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verify</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <div class="container">
+    <div class="form-card">
+      <h2>Enter Verification Code</h2>
+      <form onsubmit="event.preventDefault(); doVerify(this);">
+        <input name="email" type="hidden" value="">
+        <input name="emailManual" id="emailManual" placeholder="Email (auto-filled if you came from signup)">
+        <input name="code" placeholder="6-digit code" required>
+        <button type="submit" class="btn btn-primary">Verify</button>
+      </form>
+    </div>
+  </div>
+<script>
+  // auto-fill email from query string
+  const params = new URLSearchParams(location.search);
+  const em = params.get('email');
+  if (em) {
+    document.querySelector('input[name="email"]').value = em;
+    document.getElementById('emailManual').value = em;
+  } else {
+    document.querySelector('input[name="email"]').remove();
+  }
+</script>
+<script src="script.js"></script>
+</body>
+</html>
