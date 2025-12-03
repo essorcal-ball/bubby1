@@ -38,13 +38,6 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 20px;
 }
-
-h1 span.click-letter {
-    cursor: pointer;
-    color: blue;
-    font-weight: bold;
-}
-
 #admin-secret {
     margin-top: 20px;
     padding: 12px;
