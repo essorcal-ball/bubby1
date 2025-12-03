@@ -2,7 +2,12 @@ import express from "express";
 import fs from "fs";
 import cors from "cors";
 
+const express = require('express');
 const app = express();
+const path = require('path');
+
+// Assuming your static files (CSS/JS) are in a folder named 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
